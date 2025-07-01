@@ -1,15 +1,16 @@
 {
   "name": "image-management-backend",
   "version": "1.0.0",
-  "description": "image management ",
+  "description": "main backend",
   "license": "ISC",
   "author": "aman kumar sigh",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "dotenv": "^17.0.1",
     "express": "^5.1.0"
   }
 }
