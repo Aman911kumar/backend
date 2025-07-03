@@ -2,14 +2,23 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import express from 'express'
-import mongoose from 'mongoose'
 import connectDB from './db/index.js'
 const app = express()
 const port = process.env.port || 3000
-const mongoDB_uri = process.env.mongoDB_uri
 
 
 connectDB()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(` 🏃‍♂️ Server is listning on port ${port}`);
+    })
+    app.on("error", (err) => {
+      console.log("DB not working properly !!", err);
+    })
+  })
+  .catch((err) => {
+    console.log("Error connection failed: ", err);
+  })
 
 
 
