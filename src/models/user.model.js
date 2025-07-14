@@ -1,8 +1,10 @@
 import mongoose, { Schema, model } from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
+import dotenv from 'dotenv'
+dotenv.config()
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -26,7 +28,7 @@ const userSchema = new Schema({
     },
     avatar: {
         type: String, //cloudinary url 
-        required: true,
+        // required: true,
     },
     coverImage: {
         type: String,
@@ -47,43 +49,45 @@ const userSchema = new Schema({
 }, { timestamps: true })
 
 userSchema.pre("save", async function (next) {
+    console.log(this.password);
     if (this.isModified("password")) {
+
         this.password = await bcrypt.hash(this.password, 10)
     }
     next()
 })
 
-userSchema.methods.isPasswrodCorrect = async function (password) {
+userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.generateAccessToken = function () {
-    jwt.sign(
-    {
-        _id: this._id,
-        email: this.email,
-        username: this.username
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-        expiresIn:process.env.ACCESS_TOKEN_EXPIRY
-    }
-)
-}
-
-userSchema.methods.generateRefreshToken = function () {
-    jwt.sign(
+    return jwt.sign(
         {
-            _id:this._id,
+            _id: this._id,
+            email: this.email,
+            username: this.username
         },
-        process.env.REFRESH_TOKEN_SECRET,
+        process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
 }
 
-export const User = model("User", userSchema)
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+}
+
+export const User = mongoose.model("User", userSchema)
 
 
 

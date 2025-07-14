@@ -19,3 +19,23 @@ const connectDB = async() =>{
 }
 
 export default connectDB
+
+
+/*
+  ; (async () => {
+    try {
+      await mongoose.connect(`${mongoDB_uri}/${DB_NAME}`)
+      app.on('error', (error) => {
+        console.log("Error:", error);
+        throw error
+      })
+      app.listen(port, () => {
+        console.log(`Listining on port ${port}`)
+      })
+
+    } catch (error) {
+      console.log("Error", error);
+      throw error
+    }
+  })()
+    */
