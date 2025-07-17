@@ -20,18 +20,18 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true,
     },
-    fullname: {
+    fullName: {
         type: String,
         required: true,
         trim: true,
         index: true
     },
     avatar: {
-        type: String, //cloudinary url 
-        // required: true,
+        type: Object,
+        required: true,
     },
     coverImage: {
-        type: String,
+        type: Object,
     },
     watchHistory: [
         {
@@ -49,9 +49,7 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 userSchema.pre("save", async function (next) {
-    console.log(this.password);
     if (this.isModified("password")) {
-
         this.password = await bcrypt.hash(this.password, 10)
     }
     next()

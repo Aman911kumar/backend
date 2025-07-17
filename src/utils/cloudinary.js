@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from 'fs'
 import dotenv from 'dotenv'
+import { apiError } from "./apiError.js";
 dotenv.config({
     path: '../.env'
 })
@@ -19,20 +20,31 @@ const uploadOnCloudinary = async (localFilePath) => {
     try {
         if (!localFilePath) return null;
 
-        // const response = await cloudinary.uploader.upload(localFilePath, {
-        //     resource_type: "auto",
-        // });
-        
-        const response = true
-        console.log("✅ File uploaded successfully:", response);
+        const response = await cloudinary.uploader.upload(localFilePath, {
+            resource_type: "auto",
+        });
+
+        // const response = true
+        // console.log("✅ File uploaded successfully:", response);
         // console.log("✅ File uploaded successfully:", response.url);
         fs.unlinkSync(localFilePath); // remove temp file
         return response;
     } catch (error) {
         fs.unlinkSync(localFilePath); // remove temp file
         console.error("❌ Upload failed, local file deleted");
-        return error;
+        throw new apiError(400, error?.message || "Error while uploading");
     }
 };
 
-export { uploadOnCloudinary }
+const deleteFromCloudinary = async (cloudinaryImagePath) => {
+    try {
+        if (!cloudinaryImagePath) return null
+        const responce = await cloudinary.uploader.destroy(cloudinaryImagePath)
+        return responce
+    } catch (error) {
+        throw new apiError(400, error?.message || "Error while Deleting old image");
+
+    }
+}
+
+export { uploadOnCloudinary, deleteFromCloudinary }
