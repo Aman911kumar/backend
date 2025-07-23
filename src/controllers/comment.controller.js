@@ -13,11 +13,11 @@ function verifyOwner(userId, ownerId) {
 const getVideoComments = asyncHandler(async (req, res) => {
     //TODO: get all comments for a video
     const { videoId } = req.params
-    if (!videoId) {
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
         throw new apiError(400, "videoId is required")
     }
     const { page = 1, limit = 10 } = req.query
-    const matchStage = { video: videoId }
+    const matchStage = { video: new mongoose.Types.ObjectId(videoId) }
     const aggregation = Comment.aggregate([
         {
             $match: matchStage
@@ -67,7 +67,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
 const addComment = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     const { content } = req.body
-    if (!content || !videoId) {
+    if (!content || !mongoose.Types.ObjectId.isValid(videoId)) {
         throw new apiError(res, 400, "Content and video ID are required")
     }
     const comment = await Comment.create({
@@ -89,14 +89,14 @@ const addComment = asyncHandler(async (req, res) => {
 const updateComment = asyncHandler(async (req, res) => {
     const { videoId, commentId } = req.params
     const { content } = req.body
-    if (!content || !commentId || !videoId) {
+    if (!content || !mongoose.Types.ObjectId.isValid(commentId) || !mongoose.Types.ObjectId.isValid(videoId)) {
         throw new apiError(400, "content, commentId, and videoId are required")
     }
 
     const comment = await Comment.findOne({
         _id: commentId,
         video: videoId
-    })
+    }).lean()
     if (!comment) {
         throw new apiError(404, "Comment not found")
     }
@@ -126,7 +126,7 @@ const updateComment = asyncHandler(async (req, res) => {
 
 const deleteComment = asyncHandler(async (req, res) => {
     const { commentId, videoId } = req.params
-    if (!(commentId || videoId)) {
+    if (!mongoose.Types.ObjectId.isValid(commentId) || !mongoose.Types.ObjectId.isValid(videoId)) {
         throw new apiError(400, "commentId and videoId is required")
     }
 
