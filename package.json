@@ -22,6 +22,7 @@
     "multer": "^2.0.1"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.96",
     "prettier": "^3.6.2"
   }
 }
