@@ -3,12 +3,7 @@ import { Like } from "../models/like.model.js";
 import { apiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
-function verifyOwner(userId, ownerId) {
-    if (String(userId) !== String(ownerId)) {
-        throw new apiError(401, "Unauthorized request")
-    }
-}
+import { verifyOwner } from "../utils/verifyOwner.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     const { videoId } = req.params
@@ -16,33 +11,28 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         throw new apiError(400, "videoId is required")
     }
 
-    const likeDetails = await Like.findOne({
+    const existingLike = await Like.findOne({
         likedBy: req.user._id,
         video: new mongoose.Types.ObjectId(videoId)
     })
 
-    let like
+    let isLiked
 
-    if (!likeDetails) {
-        like = await Like.create({
+    if (!existingLike) {
+        await Like.create({
             video: new mongoose.Types.ObjectId(videoId),
             likedBy: new mongoose.Types.ObjectId(req.user._id)
         })
-        if (!like) {
-            throw new apiError(500, "Error while creating like")
-        }
+        isLiked = true
     }
     else {
-        verifyOwner(likeDetails.likedBy, req.user._id)
-        await Like.findOneAndDelete({
-            likedBy: new mongoose.Types.ObjectId(req.user._id)
-        })
+        verifyOwner(existingLike.likedBy, req.user._id)
+        await existingLike.deleteOne()
+        isLiked = false
     }
 
-    like = like ? like : "Unliked the video"
-
     return res.status(200).json(
-        new apiResponse(200, { like }, `${like ? "Liked" : "Unlike"} successfully`)
+        new apiResponse(200, { isLiked }, `${isLiked ? "Liked" : "Unliked"} successfully`)
     )
     //TODO: toggle like on video
 })
@@ -175,13 +165,13 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                         }
                     },
                     {
-                        $unwind:"$owner"
+                        $unwind: "$owner"
                     }
                 ]
             }
         },
         {
-            $unwind:"$video"
+            $unwind: "$video"
         },
         {
             $match: {
