@@ -130,7 +130,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         new apiResponse(
             200,
             { channels, channelCount },
-            channelCount === 0 ? "You don't have any suscribed channel" : "Channel fetched successfully"
+            channelCount === 0 ? "You don't have any subscribed channel" : "Channel fetched successfully"
         )
     )
 })
