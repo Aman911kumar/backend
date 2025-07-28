@@ -30,6 +30,7 @@ const createTweet = asyncHandler(async (req, res) => {
 const getUserTweets = asyncHandler(async (req, res) => {
 
     const userId = req.user._id
+
     if (!mongoose.Types.ObjectId.isValid(userId)) {
         throw new apiError(400, "Invalid userId")
     }
