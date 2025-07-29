@@ -56,18 +56,19 @@ const getAllVideos = asyncHandler(async (req, res) => {
         {
             $match: username ? { "owner.username": username } : {}
         },
-        {
-            $project: {
-                videoFile: 1,
-                thumbnail: 1,
-                title: 1,
-                description: 1,
-                owner: 1,
-                isPublished: 1,
-                createdAt: 1,
-                updatedAt: 1,
-            }
-        },
+        // {
+        //     $project: {
+        //         videoFile: 1,
+        //         thumbnail: 1,
+        //         title: 1,
+        //         description: 1,
+        //         owner: 1,
+        //         isPublished: 1,
+        //         views: 1,
+        //         createdAt: 1,
+        //         updatedAt: 1,
+        //     }
+        // },
         {
             $sort: sortStage
         }

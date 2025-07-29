@@ -4,6 +4,8 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { deleteVideo, getAllVideos, getVideoById, publishAVideo, togglePublishStatus, updateVideo } from "../controllers/video.controller.js";
 
 const router = Router()
+
+router.route("/").get(getAllVideos)
 router.use(verifyJWT)
 
 router.route("/")

@@ -44,4 +44,10 @@ app.use("/api/v1/playlist", playlistRouter)
 app.use("/api/v1/subscription", subscriptionRouter)
 app.use("/api/v1/tweet", tweetRouter)
 
+//error handler
+
+import errorHandler from './middlewares/errorHandler.middleware.js'
+
+app.use(errorHandler)
+
 export { app }
