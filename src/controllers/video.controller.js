@@ -80,7 +80,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
     const result = await Video.aggregatePaginate(aggregation, options)
     return res.status(200).json(
-        new apiResponse(200, { result }, "Video fetched successfully")
+        new apiResponse(200, { ...result }, "Video fetched successfully")
     )
     //TODO: get all videos based on query, sort, pagination
 })
@@ -119,7 +119,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     })
 
     return res.status(200).json(
-        new apiResponse(201, video, "Video uploaded successfully")
+        new apiResponse(201, {video}, "Video uploaded successfully")
     )
     // TODO: get video, upload to cloudinary, create video
 })
@@ -158,18 +158,18 @@ const getVideoById = asyncHandler(async (req, res) => {
                 }
             }
         },
-        {
-            $project: {
-                videoFile: 1,
-                thumbnail: 1,
-                title: 1,
-                description: 1,
-                owner: 1,
-                isPublished: 1,
-                createdAt: 1,
-                updatedAt: 1,
-            }
-        }
+        // {
+        //     $project: {
+        //         videoFile: 1,
+        //         thumbnail: 1,
+        //         title: 1,
+        //         description: 1,
+        //         owner: 1,
+        //         isPublished: 1,
+        //         createdAt: 1,
+        //         updatedAt: 1,
+        //     }
+        // }
     ])
     if (!video.length) {
         throw new apiError(404, "Video not found")

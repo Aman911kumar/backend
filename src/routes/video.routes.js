@@ -6,6 +6,7 @@ import { deleteVideo, getAllVideos, getVideoById, publishAVideo, togglePublishSt
 const router = Router()
 
 router.route("/").get(getAllVideos)
+// router.route("/:videoId").get(getVideoById)
 router.use(verifyJWT)
 
 router.route("/")

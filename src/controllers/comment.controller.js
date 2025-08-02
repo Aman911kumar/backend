@@ -56,10 +56,10 @@ const getVideoComments = asyncHandler(async (req, res) => {
         limit: parseInt(limit)
     }
 
-    const result = await Comment.aggregatePaginate(aggregation, options)
+    const data = await Comment.aggregatePaginate(aggregation, options)
 
     return res.status(200).json(
-        new apiResponse(200, { result }, "Comments successfully fetched")
+        new apiResponse(200, { ...data }, "Comments successfully fetched")
     )
 
 })

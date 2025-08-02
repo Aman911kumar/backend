@@ -194,9 +194,41 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
 })
 
+const getVideoLikes = asyncHandler(async (req, res) => {
+    const { videoId } = req.params
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new apiError(400, "Invalid Id")
+    }
+    const likes = await Like.countDocuments({
+        video: new mongoose.Types.ObjectId(videoId),
+    })
+
+    let isLiked = false
+
+    const userLiked = await Like.findOne({
+        $or: [{ likedBy: req.user._id }, { dislikedBy: req.user._id }],
+        likedBy: req.user._id,
+        video: new mongoose.Types.ObjectId(videoId)
+    })
+
+    if (userLiked) {
+        isLiked = true
+    }
+
+    if (!likes && likes !== 0) {
+        throw new apiError(500, "Error while fetching likes")
+    }
+
+    return res.status(200).json(
+        new apiResponse(200, { likes, isLiked }, "Likes fetched successfully")
+    )
+
+})
+
 export {
     toggleCommentLike,
     toggleTweetLike,
     toggleVideoLike,
-    getLikedVideos
+    getLikedVideos,
+    getVideoLikes
 }

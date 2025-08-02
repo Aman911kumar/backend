@@ -47,8 +47,9 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(channelId)) {
         throw new apiError(400, "Invalid channelId")
     }
+    const { page = 1, limit = 10 } = req.query
 
-    const subscribers = await Subscription.aggregate([
+    const subscribers = Subscription.aggregate([
         {
             $match: { channel: new mongoose.Types.ObjectId(channelId) }
         },
@@ -77,13 +78,27 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         throw new apiError(400, "Error while fetching subsribers")
     }
 
-    const subsCount = subscribers.length
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit)
+    }
+
+    const data = await Subscription.aggregatePaginate(subscribers, options)
+    const subscriber = await Subscription.findOne({
+        subscriber: req.user._id,
+        channel: new mongoose.Types.ObjectId(channelId)
+    })
+    let isSubscribed = false
+
+    if (subscriber) {
+        isSubscribed = true
+    }
 
     return res.status(200).json(
         new apiResponse(
             200,
-            { subscribers, subsCount },
-            subsCount === 0 ? "You don't have any suscribers" : "Subscribers fetched successfully"
+            { ...data, isSubscribed },
+            data.totalDocs === 0 ? "You don't have any suscribers" : "Subscribers fetched successfully"
         )
     )
 })

@@ -9,12 +9,12 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 
 const app = express()
 app.use(cors({
-    origin: CORS_ORIGIN,
+    origin: "http://localhost:3000",
     credentials: true
 }))
 
-app.use(express.json({ limit: "20kb" }))
-app.use(express.urlencoded({ extended: true, limit: "20kb" }))
+app.use(express.json({ limit: "10mb" }))
+app.use(express.urlencoded({ extended: true, limit: "10mb" }))
 app.use(express.static("public"))
 app.use(cookieParser())
 
